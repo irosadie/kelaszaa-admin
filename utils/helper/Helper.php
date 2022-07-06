@@ -27,7 +27,7 @@ class Helper
         $levels = [];
         $class = [];
         $status = false;
-        switch (Yii::$app->user->identity->role):
+        switch (Yii::$app->user->identity->role ?? ""):
             case "superuser";
                 $levels[] = "superuser";
                 $class[] = NULL;
