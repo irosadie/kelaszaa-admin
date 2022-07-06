@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    padding: 0px;
+    margin: 0px;
+    list-style: none;
+    text-decoration: none;
+    font-family: 'Rubik', sans-serif;
+}
+
+a{
+    color: unset;
+    text-decoration: none !important;
+}
+
+.tw-bg-talent {
+    background-position: 50% 88%, 0;
+    background-size: 240px auto, 0;
+}
+
+@media (min-width: 640px) {
+    .tw-bg-talent {
+        background-position: 0% 83%, 100% 84%;
+        background-size: 300px auto, 300px auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    .tw-bg-talent {
+        background-position: 0% 87%, 100% 87%;
+        background-size: 370px auto, 370px auto;
+    }
+}
+
+
+.tw-bg-footer{
+    background-position: 0% 40%;
+}
+
+.wave-after:after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background-image: url(https://www.prakerja.go.id/images/home-testimonial-spike-bg.svg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 50%;
+    content: "";
+    z-index: 1;
+}
+.faq-content{
+    display: none;
+}
+
+ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+p.quote:before {
+    display: inline-block;
+    width: 17px;
+    height: 20px;
+    background-image: url(https://www.prakerja.go.id/images/quote-left-icon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    content: "";
+    margin-left: -25px;
+    margin-right: 8px;
+}
+
+p.quote:after {
+    display: inline-block;
+    width: 16px;
+    height: 20px;
+    background-image: url(https://www.prakerja.go.id/images/quote-right-icon.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    content: "";
+    margin-right: -25px;
+    margin-left: 5px;
+}
+   
