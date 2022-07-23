@@ -41,7 +41,7 @@ $this->title = Yii::t('app', 'Tambah Metode Bayar');
                                 ],
                                 [
                                     'format' => 'raw',
-                                    'contentOptions' => ['style' => 'width:96px;'],
+                                    'contentOptions' => ['style' => 'width:64px;'],
                                     'value' => function ($model) {
                                         $logoUri = Yii::$app->setting->app('def_avt');
                                         if ($model->logo) :
@@ -56,20 +56,16 @@ $this->title = Yii::t('app', 'Tambah Metode Bayar');
                                     'format' => 'raw',
                                     'contentOptions' => ['style' => 'width:96px;'],
                                     'value' => function ($model) {
-                                        $logoUri = Yii::$app->setting->app('def_avt');
-                                        if ($model->logo) :
-                                            $logoUri = $model->logo;
-                                        endif;
-                                        return "<img class='tw-w-full tw-h-auto lazy' src='{$logoUri}' />";
+                                        return $model->code ?? "";
                                     }
                                 ],
                                 [
                                     'attribute' => 'name',
                                     'label' => Yii::t('app', 'Nama'),
                                     'format' => 'raw',
-                                    'contentOptions' => ['style' => 'width:240px;'],
+                                    'contentOptions' => ['style' => 'width:200px;'],
                                     'value' => function ($model) {
-                                        return  $model->username ?? "";
+                                        return  $model->name ?? "";
                                     }
                                 ],
                                 [
@@ -78,20 +74,7 @@ $this->title = Yii::t('app', 'Tambah Metode Bayar');
                                     'format' => 'raw',
                                     'contentOptions' => ['style' => 'width:50px;'],
                                     'value' => function ($model) {
-                                        switch ($model->type):
-                                            case 10:
-                                                return "<span class='tw-bg-blue-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'aktif') . "</span>";
-                                                break;
-                                            case 9:
-                                                return "<span class='tw-bg-green-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'belum konfirmasi') . "</span>";
-                                                break;
-                                            case 0:
-                                                return "<span class='tw-bg-red-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'tidak aktif') . "</span>";
-                                                break;
-                                            default:
-                                                return "<span class='tw-bg-yellow-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'lainnya') . "</span>";
-                                                break;
-                                        endswitch;
+                                        return $model->type ?? "";
                                     }
                                 ],
                                 [
@@ -101,11 +84,8 @@ $this->title = Yii::t('app', 'Tambah Metode Bayar');
                                     'contentOptions' => ['style' => 'width:50px;'],
                                     'value' => function ($model) {
                                         switch ($model->status):
-                                            case 10:
+                                            case 1:
                                                 return "<span class='tw-bg-blue-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'aktif') . "</span>";
-                                                break;
-                                            case 9:
-                                                return "<span class='tw-bg-green-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'belum konfirmasi') . "</span>";
                                                 break;
                                             case 0:
                                                 return "<span class='tw-bg-red-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'tidak aktif') . "</span>";

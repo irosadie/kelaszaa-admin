@@ -4,30 +4,33 @@ namespace app\utils\template;
 
 class Template
 {
-    static function template($icon, $style=''){
+    static function template($icon, $style = '')
+    {
         return [
-            'template'=>'<div class="form-group" style="'.$style.'" >
+            'template' => '<div class="form-group" style="' . $style . '" >
                             <label>{label}</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
-                                        <i class="'.$icon.'"></i>
+                                        <i class="' . $icon . '"></i>
                                     </div>
                                 </div>
                                 {input}
                             </div>
                             <span style="color:red">{error}</span>
-                        </div>'];
+                        </div>'
+        ];
     }
 
-    static function template2($icon, $style=''){
+    static function template2($icon, $style = '')
+    {
         return [
-            'template'=>'<div class="form-group" style="'.$style.'" >
+            'template' => '<div class="form-group" style="' . $style . '" >
                             <label>{label}</label>
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
-                                        <i class="'.$icon.'"></i>
+                                        <i class="' . $icon . '"></i>
                                     </div>
                                 </div>
                                 {input}
@@ -38,35 +41,42 @@ class Template
                                 </div>
                             </div>
                             <span style="color:red">{error}</span>
-                        </div>'];
+                        </div>'
+        ];
     }
 
-    static function summernote(){
-        return $summernote=[
-            'template'=>'<div class="form-group">
+    static function summernote()
+    {
+        return $summernote = [
+            'template' => '<div class="form-group">
                             <label>{label}</label>
                             <div class="input-group">
                                 {input}
                             </div>
                             <span style="color:red">{error}</span>
-                        </div>'];
+                        </div>'
+        ];
     }
-    static function radio(){
-        return $radio=[
-            'template'=>'<div class="form-group">
+    static function radio()
+    {
+        return $radio = [
+            'template' => '<div class="form-group mb-n3">
                             <label>{label}</label>
                             <div class="input-group">
                                 {input}
                             </div>
                             <span style="color:red">{error}</span>
-                        </div>'];
+                        </div>'
+        ];
     }
-    static function image(){
-        return $image=[
-            'template'=>'<div class="form-group">
+    static function image()
+    {
+        return $image = [
+            'template' => '<div class="form-group">
                 <label>{label}</label>
                 {input}
                 <span style="color:red">{error}</span>
-            </div>'];
+            </div>'
+        ];
     }
 }

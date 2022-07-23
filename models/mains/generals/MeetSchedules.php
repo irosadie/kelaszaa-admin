@@ -3,6 +3,8 @@
 namespace app\models\mains\generals;
 
 use Yii;
+use app\models\identities\Users;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "meet_schedules".
@@ -15,7 +17,8 @@ use Yii;
  * @property string|null $thumbnail
  * @property string|null $via
  * @property string|null $url
- * @property int|null $time
+ * @property int|null $date_begin
+ * @property int|null $date_end
  * @property int $status
  * @property int|null $created_at
  * @property int|null $created_by
@@ -39,6 +42,13 @@ class MeetSchedules extends \yii\db\ActiveRecord
         return 'meet_schedules';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+
     /**
      * @return \yii\db\Connection the database connection used by this AR class.
      */
@@ -47,15 +57,32 @@ class MeetSchedules extends \yii\db\ActiveRecord
         return Yii::$app->get('db');
     }
 
+    public function delete()
+    {
+        $this->scenario = 'delete';
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['class_id', 'time', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by'], 'integer'],
+            [['class_id', 'date_begin', 'date_end', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by'], 'integer'],
             [['short_desc', 'desc', 'via'], 'string'],
             [['title', 'thumbnail', 'url'], 'string', 'max' => 255],
+
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+
             [['class_id'], 'exist', 'skipOnError' => true, 'targetClass' => Classes::className(), 'targetAttribute' => ['class_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['deleted_by' => 'id']],
@@ -77,7 +104,8 @@ class MeetSchedules extends \yii\db\ActiveRecord
             'thumbnail' => Yii::t('app', 'Thumbnail'),
             'via' => Yii::t('app', 'Via'),
             'url' => Yii::t('app', 'Url'),
-            'time' => Yii::t('app', 'Time'),
+            'date_begin' => Yii::t('app', 'Date Begin'),
+            'date_end' => Yii::t('app', 'Date End'),
             'status' => Yii::t('app', 'Status'),
             'created_at' => Yii::t('app', 'Created At'),
             'created_by' => Yii::t('app', 'Created By'),

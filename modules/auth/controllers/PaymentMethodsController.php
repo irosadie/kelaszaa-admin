@@ -81,15 +81,17 @@ class PaymentMethodsController extends Controller
             $model = new PaymentMethods();
             $msg = "";
             if ($model->load(Yii::$app->request->post())) :
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $model->logo = $model->logo ? $model->logo : null;
                 if ($model->save()) :
                     $msg = Yii::t('app', "Data berhasil di tambah");
                     Yii::$app->session->setFlash('success', $msg);
-                    Yii::$app->response->format = Response::FORMAT_JSON;
                     return ['status' => 1, 'id' => Yii::$app->encryptor->encodeUrl($model->id), 'from' => 'create', 'type' => null, 'msg' => $msg];
                 endif;
                 $err = $model->getErrors();
                 $msg = $err[key($err)][0];
                 Yii::$app->session->setFlash('danger', $msg);
+                return ['status' => 0, 'msg' => $msg];
             endif;
             return $this->render('create', [
                 'model' => $model
@@ -115,10 +117,12 @@ class PaymentMethodsController extends Controller
         if (Yii::$app->users->can([])) :
             $code = Yii::$app->encryptor->decodeUrl($code);
             $model = $this->findModel($code);
+            $oldLogo = $model->logo;
             $msg   = "";
             if ($model->load(Yii::$app->request->post())) :
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $model->logo = $model->logo ? $model->logo : $oldLogo;
                 if ($model->save()) :
-                    Yii::$app->response->format = Response::FORMAT_JSON;
                     $msg = Yii::t('app', 'Data Berhasil di Ubah');
                     Yii::$app->session->setFlash('success', $msg);
                     return ['status' => 1, 'id' => Yii::$app->encryptor->encodeUrl($model->id), 'from' => 'update', 'type' => null, 'msg' => $msg];
@@ -126,6 +130,7 @@ class PaymentMethodsController extends Controller
                 $err = $model->getErrors();
                 $msg = $err[key($err)][0];
                 Yii::$app->session->setFlash('success', $msg);
+                return ['status' => 0, 'msg' => $msg];
             endif;
             return $this->render('update', [
                 'model' => $model
@@ -136,24 +141,22 @@ class PaymentMethodsController extends Controller
 
     public function actionDelete()
     {
-        if (Yii::$app->users->can(["operator"])) :
-            $code       = Yii::$app->encryptor->decodeUrl(Yii::$app->request->post('code'));
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if (Yii::$app->users->can([])) :
+            $code = Yii::$app->encryptor->decodeUrl(Yii::$app->request->post('code'));
             $model = $this->findModel($code);
-            if ($model) :
-                $model->deleted_at = time();
-                $model->deleted_by = Yii::$app->user->id;
-                $model->save(false);
-                return json_encode(['status' => 1]);
+            if ($model->delete()) :
+                return ['status' => 1];
             endif;
-            return json_encode(['status' => -1]);
+            return ['status' => -1];
         endif;
-        return json_encode(['status' => -99]);;
+        return ['status' => -99];
     }
 
     protected function findModel($id)
     {
         $model = PaymentMethods::find()->where(['id' => $id])
-            ->andWhere(['is', 'deleted_at', new \yii\db\Expression('null')])
+            ->andWhere(['deleted_at' => NULL])
             ->one();
         if ($model !== null) :
             return $model;

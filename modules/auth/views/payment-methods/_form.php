@@ -65,17 +65,16 @@ function init(){
     let hasClick = 0;
     $("body").on("beforeSubmit", "form", function (e) {
         var form = $(this);
-        // if (form.find(".has-error").length || hasClick > 0) 
-        // {
-        //     return false;
-        // }
+        if (form.find(".has-error").length || hasClick > 0) 
+        {
+            return false;
+        }
         $.ajax({
             url : form.attr("action"),
             type : form.attr("method"),
             data : form.serialize(),
             dataType : 'JSON',
             success: function (response){
-                //masih ada alert
                 let {status, from, id} = response;
                 if((from=='create') && status){
                     $.pjax({url:'index', container:'#p0', timeout: false});
@@ -88,9 +87,7 @@ function init(){
                 $.pjax.reload({container: '#p0', timeout: false});
             },
             error  : function (e) {
-                //masih ada alert
-                alert(JSON.stringify(e));
-                // window.location.reload();
+                window.location.reload();
             }
         });
         hasClick++;

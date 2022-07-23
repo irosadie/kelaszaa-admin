@@ -5,7 +5,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 <?php $form = ActiveForm::begin([
-    'action' => ['view', 'code' => Yii::$app->request->get('code')],
+    'action' => ['index'],
     'method' => 'get',
     'options' => [
         'data-pjax' => true

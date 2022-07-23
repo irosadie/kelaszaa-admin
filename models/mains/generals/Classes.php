@@ -4,6 +4,7 @@ namespace app\models\mains\generals;
 
 use app\models\identities\Users;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "classes".
@@ -49,12 +50,28 @@ class Classes extends \yii\db\ActiveRecord
         return 'classes';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+
     /**
      * @return \yii\db\Connection the database connection used by this AR class.
      */
     public static function getDb()
     {
         return Yii::$app->get('db');
+    }
+
+    public function delete()
+    {
+        $this->scenario = 'delete';
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
     }
 
     /**
@@ -64,10 +81,20 @@ class Classes extends \yii\db\ActiveRecord
     {
         return [
             [['short_desc', 'desc'], 'string'],
+            [['code'], 'unique'],
             [['mentor_id', 'days_in_class', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by'], 'integer'],
-            [['class_begin', 'class_end'], 'safe'],
+            [['class_begin', 'class_end', 'price'], 'safe'],
             [['code'], 'string', 'max' => 20],
             [['thumbnail', 'title', 'main_video', 'main_file', 'certificate_file'], 'string', 'max' => 255],
+
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+            [['desc'], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['deleted_by' => 'id']],
             [['mentor_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['mentor_id' => 'id']],

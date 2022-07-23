@@ -65,6 +65,7 @@ class MentorsController extends Controller
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
             $dataProvider->query
                 ->andWhere(['deleted_at' => NULL])
+                ->andWhere(['role' => 'mentor'])
                 ->andWhere(['or', ['status' => 10], ['status' => 9], ['status' => 0], ['status' => -1]])
                 ->orderBy(['id' => SORT_DESC]);
             return $this->render('index', [
@@ -83,15 +84,18 @@ class MentorsController extends Controller
             $model->scenario = "mentor-create";
             $msg = "";
             if ($model->load(Yii::$app->request->post())) :
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $model->avatar = $model->avatar ?? null;
+                $model->username = $model->email;
                 if ($model->save()) :
                     $msg = Yii::t('app', "Data berhasil di tambah");
                     Yii::$app->session->setFlash('success', $msg);
-                    Yii::$app->response->format = Response::FORMAT_JSON;
                     return ['status' => 1, 'id' => Yii::$app->encryptor->encodeUrl($model->id), 'from' => 'create', 'type' => null, 'msg' => $msg];
                 endif;
                 $err = $model->getErrors();
                 $msg = $err[key($err)][0];
                 Yii::$app->session->setFlash('danger', $msg);
+                return ['status' => 0, 'msg' => $msg];
             endif;
             return $this->render('create', [
                 'model' => $model
@@ -117,19 +121,19 @@ class MentorsController extends Controller
         if (Yii::$app->users->can([])) :
             $code = Yii::$app->encryptor->decodeUrl($code);
             $model = Users::findOne($code);
+            $model->scenario = 'update';
             $msg = "";
             if ($model->load(Yii::$app->request->post())) :
-                $model->updated_at = time();
-                $model->updated_by = Yii::$app->user->id;
+                Yii::$app->response->format = Response::FORMAT_JSON;
                 if ($model->save()) :
                     $msg = Yii::t('app', "Data berhasil di ubah");
                     Yii::$app->session->setFlash('success', $msg);
-                    Yii::$app->response->format = Response::FORMAT_JSON;
                     return ['status' => 1, 'id' => null, 'from' => 'update', 'type' => null, 'msg' => $msg];
                 endif;
                 $err = $model->getErrors();
                 $msg = $err[key($err)][0];
                 Yii::$app->session->setFlash('danger', $msg);
+                return ['status' => 0, 'msg' => $msg];
             endif;
 
             return $this->render('upload_photo', [
@@ -144,21 +148,21 @@ class MentorsController extends Controller
         if (Yii::$app->users->can([])) :
             $code = Yii::$app->encryptor->decodeUrl($code);
             $model = $this->findModel($code);
-            $avatar = $model->avatar;
-            $msg   = "";
+            $oldAvatar = $model->avatar;
+            $msg = "";
             if ($model->load(Yii::$app->request->post())) :
-                if (!$model->avatar) :
-                    $model->avatar = $avatar;
-                endif;
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $model->username = $model->email;
+                $model->avatar = $model->avatar ? $model->avatar : $oldAvatar;
                 if ($model->save()) :
-                    Yii::$app->response->format = Response::FORMAT_JSON;
                     $msg = Yii::t('app', 'Data Berhasil di Ubah');
                     Yii::$app->session->setFlash('success', $msg);
                     return ['status' => 1, 'id' => Yii::$app->encryptor->encodeUrl($model->id), 'from' => 'update', 'type' => null, 'msg' => $msg];
                 endif;
                 $err = $model->getErrors();
                 $msg = $err[key($err)][0];
-                Yii::$app->session->setFlash('success', $msg);
+                Yii::$app->session->setFlash('warning', $msg);
+                return ['status' => 0, 'msg' => $msg];
             endif;
             return $this->render('update', [
                 'model' => $model
@@ -169,29 +173,32 @@ class MentorsController extends Controller
 
     public function actionDelete()
     {
-        if (Yii::$app->users->can(["operator"])) :
-            $code       = Yii::$app->encryptor->decodeUrl(Yii::$app->request->post('code'));
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if (Yii::$app->users->can([])) :
+            $code = Yii::$app->encryptor->decodeUrl(Yii::$app->request->post('code'));
             $model = $this->findModel($code);
-            if ($model) :
-                $model->deleted_at = time();
-                $model->deleted_by = Yii::$app->user->id;
-                $model->save(false);
-                return json_encode(['status' => 1]);
+            if ($model->delete()) :
+                return ['status' => 1];
             endif;
-            return json_encode(['status' => -1]);
+            return ['status' => -1];
         endif;
-        return json_encode(['status' => -99]);;
+        return ['status' => -99];
+    }
+
+    public function actionResetPassword()
+    {
+        //kirim email
+        return 1;
     }
 
     protected function findModel($id)
     {
         $model = Mentors::find()->where(['id' => $id])
-            ->andWhere(['is', 'deleted_at', new \yii\db\Expression('null')])
+            ->andWhere(['deleted_at' => NULL])
             ->one();
         if ($model !== null) :
             return $model;
         endif;
-
         throw new NotFoundHttpException('Page Not Found');
     }
 

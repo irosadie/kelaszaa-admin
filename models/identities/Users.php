@@ -6,6 +6,7 @@ use yii\behaviors\TimestampBehavior;
 use Yii;
 use yii\web\IdentityInterface;
 
+
 /**
  * This is the model class for table "users".
  *
@@ -62,12 +63,28 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
         return 'users';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+
     /**
      * @return \yii\db\Connection the database connection used by this AR class.
      */
     public static function getDb()
     {
         return Yii::$app->get('db');
+    }
+
+    public function delete()
+    {
+        $this->scenario = 'delete';
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
     }
 
     /**
@@ -86,15 +103,25 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
             [['email'], 'string', 'max' => 100],
             [['email'], 'unique'],
             [['email'], 'email'],
+            [['username', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by'], 'safe'],
+
+            ['role', 'default', 'value' => 'user', 'on' => 'user-create'],
+            ['role', 'default', 'value' => 'mentor', 'on' => 'mentor-create'],
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+            [['biography'], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
             [['password_hash'], function ($attribute, $params) {
                 $this->password_hash = Yii::$app->security->generatePasswordHash($this->password_hash);
                 return;
-            }, 'on' => ['mentor-create']],
-            [['username'], function ($attribute, $params) {
-                $this->username = $this->email;
-                return;
-            }, 'on' => ['mentor-create']],
-            [['biography'], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            }, 'when' => function ($model) {
+                return $model->isNewRecord;
+            }],
+
             [['phone'], 'string', 'max' => 16],
             [['born_in', 'born_at', 'address', 'gender', 'avatar', 'biography', 'created_by', 'updated_by', 'deleted_at', 'deleted_by'], 'safe'],
         ];

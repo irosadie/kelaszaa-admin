@@ -3,6 +3,8 @@
 namespace app\models\mains\generals;
 
 use Yii;
+use app\models\identities\Users;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "class_members".
@@ -39,12 +41,46 @@ class ClassMembers extends \yii\db\ActiveRecord
         return 'class_members';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+
     /**
      * @return \yii\db\Connection the database connection used by this AR class.
      */
     public static function getDb()
     {
         return Yii::$app->get('db');
+    }
+
+    public function delete()
+    {
+        $this->scenario = 'delete';
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
+    }
+
+    public function ban()
+    {
+        $this->is_blocked = $this->is_blocked == 1 ? 0 : 1;
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
+    }
+
+    public function alumni()
+    {
+        $this->is_alumni = $this->is_alumni == 1 ? 0 : 1;
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
     }
 
     /**
@@ -54,7 +90,15 @@ class ClassMembers extends \yii\db\ActiveRecord
     {
         return [
             [['booking_id', 'class_id', 'member_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by', 'status', 'is_blocked'], 'integer'],
-            [['begin_at', 'end_at'], 'safe'],
+            [['begin_at', 'end_at', 'certificate_file', 'is_blocked', 'is_alumni'], 'safe'],
+
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+
             [['class_id'], 'exist', 'skipOnError' => true, 'targetClass' => Classes::className(), 'targetAttribute' => ['class_id' => 'id']],
             [['member_id'], 'exist', 'skipOnError' => true, 'targetClass' => Members::className(), 'targetAttribute' => ['member_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['created_by' => 'id']],

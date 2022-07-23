@@ -21,15 +21,15 @@ use app\utils\helper\Helper;
     <?php if (Yii::$app->users->can([])) : ?>
     <li class="nav-item">
         <a href="#" class="nav-link has-dropdown"><i
-                class="fas fa-file"></i><span><?= Yii::t('app', 'Manajemen Kelas') ?></span></a>
+                class="fas fa-file"></i><span><?= Yii::t('app', 'Manajemen Kelas*') ?></span></a>
         <ul class="dropdown-menu">
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/juknis/create') ?>><?= Yii::t('app', 'Tambah Kelas') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/classes/create') ?>><?= Yii::t('app', 'Tambah Kelas*') ?></a>
             </li>
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/juknis/index') ?>><?= Yii::t('app', 'Lihat Kelas') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/classes/index') ?>><?= Yii::t('app', 'Lihat Kelas*') ?></a>
             </li>
         </ul>
     </li>
@@ -51,22 +51,36 @@ use app\utils\helper\Helper;
         <ul class="dropdown-menu">
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/juknis/create') ?>><?= Yii::t('app', 'Tambah Member') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/members/create') ?>><?= Yii::t('app', 'Tambah Member') ?></a>
             </li>
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/juknis/index') ?>><?= Yii::t('app', 'Lihat Member') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/members/index') ?>><?= Yii::t('app', 'Lihat Member') ?></a>
             </li>
         </ul>
     </li>
     <?php endif; ?>
 
     <?php if (Yii::$app->users->can([])) : ?>
-    <li class="nav-item active">
-        <a href="<?= Yii::getAlias('@web/auth/dashboard') ?>" class="nav-link">
-            <i class="fas fa-home"></i>
-            <span><?= Yii::t('app', 'Bank Materi') ?></span>
+    <li class="nav-item dropdown">
+        <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+            <i class="fas fa-cogs"></i>
+            <span><?= Yii::t('app', 'Manajemen Pembelian') ?></span>
         </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="nav-link"
+                    href=<?= Yii::getAlias('@web/auth/setting-general/index') ?>><?= Yii::t('app', 'Daftar Pembelian') ?></a>
+            </li>
+            <li>
+                <a class="nav-link"
+                    href=<?= Yii::getAlias('@web/auth/setting-general/index') ?>><?= Yii::t('app', 'Pembelian Berhasil') ?></a>
+            </li>
+            <li>
+                <a class="nav-link"
+                    href=<?= Yii::getAlias('@web/auth/setting-general/index') ?>><?= Yii::t('app', 'Pembelian Gagal') ?></a>
+            </li>
+        </ul>
     </li>
     <?php endif; ?>
 
@@ -113,24 +127,24 @@ use app\utils\helper\Helper;
     <li class="nav-item dropdown">
         <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
             <i class="fas fa-cogs"></i>
-            <span><?= Yii::t('app', 'Data Master') ?></span>
+            <span><?= Yii::t('app', 'Data Master*') ?></span>
         </a>
         <ul class="dropdown-menu">
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/mentors/index') ?>><?= Yii::t('app', 'Mentor') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/mentors/index') ?>><?= Yii::t('app', 'Mentor*') ?></a>
             </li>
         </ul>
         <ul class="dropdown-menu">
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/users/index') ?>><?= Yii::t('app', 'Pengguna') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/users/index') ?>><?= Yii::t('app', 'Pengguna*') ?></a>
             </li>
         </ul>
         <ul class="dropdown-menu">
             <li>
                 <a class="nav-link"
-                    href=<?= Yii::getAlias('@web/auth/payment-methods/index') ?>><?= Yii::t('app', 'Metode Bayar') ?></a>
+                    href=<?= Yii::getAlias('@web/auth/payment-methods/index') ?>><?= Yii::t('app', 'Metode Bayar*') ?></a>
             </li>
         </ul>
     </li>

@@ -39,13 +39,13 @@ use app\utils\template\Template;
                     <?= $form->field($model, 'email', Template::template('fas fa-at'))->textInput(['maxlength' => true, 'placeholder' => Yii::t('app', 'zurnalis@kelaszaa.id')])->label(Yii::t('app', 'Username/ Email')) ?>
                     <?php if ($model->isNewRecord) : ?>
                     <?= $form->field($model, 'password_hash', Template::template('fas fa-eye'))->passwordInput(['maxlength' => true, 'placeholder' => Yii::t('app', '********')])->label(Yii::t('app', 'Password')) ?>
-                    <?php endif; ?>
                     <?= $form->field($model, 'avatar', Template::image())->fileInput([
-                        'class' => 'filepond',
-                        'data-allow-reorder' => true,
-                        'data-max-file-size' => '3MB',
-                        'data-max-files' => '1'
-                    ])->label(Yii::t('app', 'Upload Avatar')) ?>
+                            'class' => 'filepond',
+                            'data-allow-reorder' => true,
+                            'data-max-file-size' => '3MB',
+                            'data-max-files' => '1'
+                        ])->label(Yii::t('app', 'Upload Avatar')) ?>
+                    <?php endif; ?>
                     <?= $form->field($model, 'status')
                         ->dropDownList([10 => Yii::t('app', 'Aktif'), 9 => Yii::t('app', 'Butuh Konfirmasi'), 0 => 'Tidak Aktif', -1 => 'Lainnya'], ['class' => 'form-control select2'])->label(Yii::t('app', 'Status'));
                     ?>
@@ -70,10 +70,10 @@ function init(){
     let hasClick = 0;
     $("body").on("beforeSubmit", "form", function (e) {
         var form = $(this);
-        // if (form.find(".has-error").length || hasClick > 0) 
-        // {
-        //     return false;
-        // }
+        if (form.find(".has-error").length || hasClick > 0) 
+        {
+            return false;
+        }
         $.ajax({
             url : form.attr("action"),
             type : form.attr("method"),
@@ -93,9 +93,7 @@ function init(){
                 $.pjax.reload({container: '#p0', timeout: false});
             },
             error  : function (e) {
-                //masih ada alert
-                alert(JSON.stringify(e));
-                // window.location.reload();
+                window.location.reload();
             }
         });
         hasClick++;

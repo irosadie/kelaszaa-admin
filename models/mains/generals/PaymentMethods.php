@@ -3,6 +3,7 @@
 namespace app\models\mains\generals;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "payment_methods".
@@ -34,12 +35,28 @@ class PaymentMethods extends \yii\db\ActiveRecord
         return 'payment_methods';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+
     /**
      * @return \yii\db\Connection the database connection used by this AR class.
      */
     public static function getDb()
     {
         return Yii::$app->get('db');
+    }
+
+    public function delete()
+    {
+        $this->scenario = 'delete';
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
     }
 
     /**
@@ -53,7 +70,14 @@ class PaymentMethods extends \yii\db\ActiveRecord
             [['code'], 'string', 'max' => 15],
             [['name'], 'string', 'max' => 255],
             [['data'], 'string'],
-            [['logo', 'type'], 'safe']
+            [['logo', 'type'], 'safe'],
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+            [['data', 'paying_guide'], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

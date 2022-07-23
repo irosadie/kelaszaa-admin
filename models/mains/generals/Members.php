@@ -21,11 +21,9 @@ use Yii;
  * @property string|null $born_at
  * @property int|null $gender
  * @property string|null $address
- * @property int|null $delete
  * @property string|null $agency
  * @property string|null $agency_address
  * @property string|null $agency_phone
- * @property string|null $role
  * @property int $status
  * @property int|null $created_at
  * @property int|null $created_by
@@ -62,12 +60,25 @@ class Members extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['avatar'], 'required'],
-            [['avatar', 'gender', 'delete', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by'], 'integer'],
-            [['born_at'], 'safe'],
+            [['gender', 'status', 'created_at', 'created_by', 'updated_at', 'updated_by', 'deleted_at', 'deleted_by'], 'integer'],
+            [['born_at', 'biography', 'avatar'], 'safe'],
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+            [['biography'], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
+            [['password_hash'], function ($attribute, $params) {
+                $this->password_hash = Yii::$app->security->generatePasswordHash($this->password_hash);
+                return;
+            }, 'when' => function ($model) {
+                return $model->isNewRecord;
+            }],
             [['username', 'password_hash', 'password_reset_token', 'born_in', 'address', 'agency', 'agency_address'], 'string', 'max' => 255],
             [['full_name'], 'string', 'max' => 128],
-            [['auth_key', 'role'], 'string', 'max' => 32],
+            [['auth_key'], 'string', 'max' => 32],
             [['register_token'], 'string', 'max' => 225],
             [['email'], 'string', 'max' => 100],
             [['phone'], 'string', 'max' => 16],
@@ -95,11 +106,9 @@ class Members extends \yii\db\ActiveRecord
             'born_at' => Yii::t('app', 'Born At'),
             'gender' => Yii::t('app', 'Gender'),
             'address' => Yii::t('app', 'Address'),
-            'delete' => Yii::t('app', 'Delete'),
             'agency' => Yii::t('app', 'Agency'),
             'agency_address' => Yii::t('app', 'Agency Address'),
             'agency_phone' => Yii::t('app', 'Agency Phone'),
-            'role' => Yii::t('app', 'Role'),
             'status' => Yii::t('app', 'Status'),
             'created_at' => Yii::t('app', 'Created At'),
             'created_by' => Yii::t('app', 'Created By'),

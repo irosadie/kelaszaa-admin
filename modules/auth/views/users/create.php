@@ -2,7 +2,7 @@
 
 use yii\widgets\Pjax;
 
-$this->title = Yii::t('app', 'Tambah Mentor');
+$this->title = Yii::t('app', 'Tambah Pengguna');
 ?>
 <?php Pjax::begin(); ?>
 <?= $this->render('@app/views/message/alert') ?>

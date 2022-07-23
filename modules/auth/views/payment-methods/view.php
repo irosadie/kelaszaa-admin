@@ -18,6 +18,10 @@ $this->title = Yii::t('app', 'Detail RKAT');
         <div class="card">
             <div class="card-header">
                 <h4><?= $this->title ?></h4>
+                <div class="card-header-action">
+                    <img class='tw-w-12 tw-h-12 lazy tw-rounded-lg'
+                        src='<?= $model->logo ? $model->logo : Yii::$app->setting->app('def_avt') ?>' />
+                </div>
             </div>
             <div class="card-body pb-4">
                 <div class="tw-grid tw-grid-cols-2 tw-gap-y-4">
@@ -73,35 +77,34 @@ $this->title = Yii::t('app', 'Detail RKAT');
                         </tr>
                     </table>
                 </div>
-                <div class="form-group">
-                    <?= Yii::$app->users->can([]) ? Html::button('<i class="fas fa-trash"></i> ', ['class' => 'btn btn-sm btn-danger m-1 float-right', 'data-pjax' => 0, 'style' => 'color:#fff', 'id' => 'delete', 'data' => Yii::$app->encryptor->encodeUrl($model->id), 'data-pjax' => 1]) : "";  ?>
-                    <?= Yii::$app->users->can([]) ? Html::a('<i class="fas fa-edit"></i> ', Url::to(['update', 'code' => Yii::$app->encryptor->encodeUrl($model->id)]), ['class' => 'btn btn-sm btn-warning m-1 float-right', 'style' => 'color:#fff', 'data-pjax' => 1]) : "";  ?>
-                    <?= Html::a('<i class="fas fa-undo-alt"></i> ', 'index', ['class' => 'btn btn-sm btn-info m-1 float-right', 'style' => 'color:#fff', 'data-pjax' => 1]);  ?>
+                <div class="form-group float-right">
+                    <?= Html::a('<i class="fas fa-undo-alt"></i> ', 'index', ['class' => 'btn btn-sm btn-info m-1', 'data-pjax' => 1]);  ?>
+                    <?= Html::a('<i class="fa fa-edit"></i> ', ['update', 'code' => Yii::$app->encryptor->encodeUrl($model->id)], ['data-pjax' => 1, 'class' => 'btn btn-sm btn-warning m-1']); ?>
+                    <?= Html::button('<i class="fa fa-trash"></i> ', ['class' => 'btn btn-sm btn-danger m-1', 'id' => 'delete', 'code' => Yii::$app->encryptor->encodeUrl($model->id), 'data-title' => Yii::t('app', 'Hapus Payment Method?'), 'data-desc' => Yii::t('app', 'Tindakan ini tidak bisa dibatalkan!')]) ?>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <?php
-$this->registerJsVar("is_code", Yii::$app->encryptor->encodeUrl($model->id));
 
 $js = <<< JS
-function processData(type, code){
+function processData(type, code, title="", msg=""){
     let url;
     switch(type){
         case "delete":
             url= baseUrl+module+'/'+controller+'/delete'
             break;
     }
-    swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        type: 'warning',
+    Swal.fire({
+        title: title ?? messageConfirm,
+        text: msg ?? textConfirm,
+        icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'No, cancel!',
+        confirmButtonText: textYes,
+        cancelButtonText: textNo,
         buttonsStyling: true,
         showLoaderOnConfirm: true,
         preConfirm: function (data) {
@@ -114,58 +117,63 @@ function processData(type, code){
                     },
                     type: 'POST',
                     dataType: 'JSON',
-                    success:function(result){
-                        resolve(result.status);
+                    success:function({status}){
+                        resolve(status);
                     },
+                    error:function(){
+                        resolve(-1)
+                    }
                 });
 
             })
         },
-    }).then(function (data) {
-        if(data==1){
-            swal(
-                'Delete Success',
-                'Data berhasil di hapus :)',
+    }).then(function ({isDismissed, value}) {
+        if(isDismissed){
+            Swal.fire(
+                messageCanceled,
+                textCanceled,
+                'error'
+            )
+            return;
+        }
+        if(value==1){
+            Swal.fire(
+                messageSuccess,
+                textSuccess,
                 'success'
             ).then(function () {
                 $.pjax({url:'index', container:'#p0', timeout: false});
             });
         }
-        else if(data==-1){
-            swal(
-                'Oups Galat!!!',
-                'Sepertinya ada yang salah, coba ulangi',
+        else if(value==-1){
+            Swal.fire(
+                messageFailed,
+                textFailed,
                 'error'
             ).then(function () {
                 window.location.reload();
             });
         }
         else{
-            swal(
-                'Ups!!!',
-                'Anda Tidak memiliki hak untuk menghapus lagi',
+            Swal.fire(
+                messageAnauthorized,
+                textAnauthorized,
                 'error'
             ).then(function () {
                 window.location.reload();
             });
         }
-    }, function (dismiss) {
-        if (dismiss === 'cancel') {
-            swal(
-            'Cancelled',
-            'Your imaginary file is safe :)',
-            'error'
-            )
-        }
     });
 }
 function init(){
     $('#delete').click(function(){
-        processData("delete", $(this).attr('data'))
-    });
-};
-init()
-$('.lazy').Lazy()
+        processData("delete", $(this).attr('code'), $(this).data("title"), $(this).data("desc"));
+    })
+    $('.lazy').lazy();
+}
+
+init();
+
 JS;
 $this->registerJs($js);
 ?>

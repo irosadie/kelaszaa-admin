@@ -8,7 +8,7 @@ use yii\helpers\{
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 
-$this->title = Yii::t('app', 'Manajemen Kelas');
+$this->title = Yii::t('app', 'Tambah Kelas');
 
 ?>
 <?php Pjax::begin(); ?>
@@ -40,21 +40,39 @@ $this->title = Yii::t('app', 'Manajemen Kelas');
                                     'header' => 'No.'
                                 ],
                                 [
+                                    'attribute' => 'code',
+                                    'label' => Yii::t('app', 'Kode'),
+                                    'format' => 'raw',
+                                    'contentOptions' => ['style' => 'width:96px;'],
+                                    'value' => function ($model) {
+                                        return $model->code ?? "";
+                                    }
+                                ],
+                                [
                                     'attribute' => 'title',
                                     'label' => Yii::t('app', 'Nama'),
                                     'format' => 'raw',
-                                    'contentOptions' => ['style' => 'width:300px;'],
+                                    'contentOptions' => ['style' => 'width:180px;'],
                                     'value' => function ($model) {
-                                        return  $model->name ? "<strong>{$model->title}</strong>" : "";
+                                        return  $model->title ?? "";
                                     }
                                 ],
                                 [
                                     'attribute' => 'mentor_id',
                                     'label' => Yii::t('app', 'Mentor'),
                                     'format' => 'raw',
-                                    'contentOptions' => ['style' => 'width:96px;'],
+                                    'contentOptions' => ['style' => 'width:50px;'],
                                     'value' => function ($model) {
-                                        return $model->mentor_id ? "<span class='tw-bg-red-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-w-fit'>{$model->mentor_id}</span>" : "";
+                                        return $model->mentor->full_name ? "<span class='tw-whitespace-nowrap'>{$model->mentor->full_name}</span>" : "";
+                                    }
+                                ],
+                                [
+                                    'attribute' => 'price',
+                                    'label' => Yii::t('app', 'Harga'),
+                                    'format' => 'raw',
+                                    'contentOptions' => ['style' => 'width:50px;'],
+                                    'value' => function ($model) {
+                                        return $model->price ? "Rp.<span class='tw-whitespace-nowrap'>" . number_format($model->price, 0, '.', '.') . "</span>" : "-";
                                     }
                                 ],
                                 [
@@ -63,7 +81,17 @@ $this->title = Yii::t('app', 'Manajemen Kelas');
                                     'format' => 'raw',
                                     'contentOptions' => ['style' => 'width:50px;'],
                                     'value' => function ($model) {
-                                        return $model->status == 1 ? "<span class='tw-bg-green-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs'>" . Yii::t('app', 'Publish') . "</span>" : "<span class='tw-bg-blue-400 tw-text-xs tw-px-3 tw-py-1 tw-rounded-full tw-text-white'>" . Yii::t('app', 'Draf') . "</span>";
+                                        switch ($model->status):
+                                            case 1:
+                                                return "<span class='tw-bg-blue-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'aktif') . "</span>";
+                                                break;
+                                            case 0:
+                                                return "<span class='tw-bg-red-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'tidak aktif') . "</span>";
+                                                break;
+                                            default:
+                                                return "<span class='tw-bg-yellow-400 tw-px-3 tw-py-1 tw-rounded-full tw-text-white tw-text-xs tw-whitespace-nowrap'>" . Yii::t('app', 'lainnya') . "</span>";
+                                                break;
+                                        endswitch;
                                     }
                                 ],
                                 [
@@ -73,12 +101,22 @@ $this->title = Yii::t('app', 'Manajemen Kelas');
                                     'visibleButtons' => [
                                         'update' => false,
                                         'delete' => false,
-                                        'view' => true,
+                                        'view' => false,
                                     ],
-                                    'template' => '{view}',
+                                    'template' => '{more}',
                                     'buttons' => array(
-                                        'view' => function ($url, $model, $key) {
-                                            return Html::a('<i class="fas fa-file"></i> ' . Yii::t('app', 'detail'), Url::to(['view', 'code' => Yii::$app->encryptor->encodeUrl($model->id)]), ['class' => 'btn btn-sm btn-primary m-1 tw-whitespace-nowrap']);
+                                        'more' => function ($url, $model, $key) {
+                                            return '<div class="dropdown d-inline">
+                                                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fas fa-file"></i> ' . Yii::t('app', 'aksi') . '
+                                                        </button>
+                                                        <div class="dropdown-menu">
+                                                            ' . Html::a(Yii::t('app', 'detail*'), Url::to(['view', 'code' => Yii::$app->encryptor->encodeUrl($model->id)]), ['class' => 'dropdown-item tw-whitespace-nowrap']) . '
+                                                            ' . Html::a(Yii::t('app', 'member*'), Url::to(['member', 'code' => Yii::$app->encryptor->encodeUrl($model->id)]), ['class' => 'dropdown-item tw-whitespace-nowrap']) . '
+                                                            ' . Html::a(Yii::t('app', 'room'), Url::to(['room', 'code' => Yii::$app->encryptor->encodeUrl($model->id)]), ['class' => 'dropdown-item tw-whitespace-nowrap']) . '
+                                                            ' . Html::a(Yii::t('app', 'meet*'), Url::to(['meet', 'code' => Yii::$app->encryptor->encodeUrl($model->id)]), ['class' => 'dropdown-item tw-whitespace-nowrap']) . '
+                                                        </div>
+                                                    </div>';
                                         }
                                     )
                                 ],
@@ -92,9 +130,12 @@ $this->title = Yii::t('app', 'Manajemen Kelas');
 </div>
 <?php
 $js = <<< JS
+
+$('.lazy').Lazy()
 $(document).on('pjax:popstate', function(){
     $.pjax.reload({container: '#p0', timeout: false});
 });
+
 JS;
 $this->registerJs($js);
 ?>

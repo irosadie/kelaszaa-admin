@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\Pjax;
 
-$this->title = Yii::t('app', 'Ubah Data Mentor');
+$this->title = Yii::t('app', 'Ubah Data Pengguna');
 ?>
 <?php Pjax::begin(); ?>
 <?= $this->render('@app/views/message/alert') ?>

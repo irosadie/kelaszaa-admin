@@ -10,7 +10,7 @@ use yii\widgets\Pjax;
     <div class="col-12 col-md-12 col-lg-5">
         <div class="card profile-widget">
             <div class="profile-widget-header">
-                <img alt="image" src="<?= $model->avatar ?? Yii::$app->setting->app('def_avt') ?>"
+                <img alt="image" src="<?= ($model->avatar ? $model->avatar : Yii::$app->setting->app('def_avt')) ?>"
                     class="rounded-circle profile-widget-picture tw-w-24 tw-h-24">
                 <div class="profile-widget-items">
                     <div class="profile-widget-item">
@@ -78,11 +78,106 @@ use yii\widgets\Pjax;
                     </div>
                 </div>
                 <div class="card-footer text-right">
-                    <?= Html::a('<i class="fa fa-camera"></i> ' . Yii::t('app', 'upload foto'), ['upload-photo', 'code' => Yii::$app->encryptor->encodeUrl($model->id)], ['data-pjax' => 1, 'class' => 'btn btn-sm btn-warning m-1']); ?>
-                    <?= Html::a('<i class="fa fa-edit"></i> ' . Yii::t('app', 'ubah data'), ['update', 'code' => Yii::$app->encryptor->encodeUrl($model->id)], ['data-pjax' => 1, 'class' => 'btn btn-sm btn-success m-1']); ?>
+                    <?= Html::a('<i class="fas fa-undo-alt"></i> ', 'index', ['class' => 'btn btn-sm btn-info m-1', 'data-pjax' => 1]);  ?>
+                    <?= Html::button('<i class="fa fa-key"></i> ', ['class' => 'btn btn-sm btn-primary m-1', 'id' => 'reset-password', 'data-title' => Yii::t('app', 'Reset Password?'), 'data-desc' => Yii::t('app', 'Akan mengirim email reset password ke akun Mentor')]) ?>
+                    <?= Html::a('<i class="fa fa-camera"></i> ', ['upload-photo', 'code' => Yii::$app->encryptor->encodeUrl($model->id)], ['data-pjax' => 1, 'class' => 'btn btn-sm btn-success m-1']); ?>
+                    <?= Html::a('<i class="fa fa-edit"></i> ', ['update', 'code' => Yii::$app->encryptor->encodeUrl($model->id)], ['data-pjax' => 1, 'class' => 'btn btn-sm btn-warning m-1']); ?>
+                    <?= Html::button('<i class="fa fa-trash"></i> ', ['class' => 'btn btn-sm btn-danger m-1', 'id' => 'delete', 'code' => Yii::$app->encryptor->encodeUrl($model->id), 'data-title' => Yii::t('app', 'Hapus Mentor?'), 'data-desc' => Yii::t('app', 'Tindakan ini tidak bisa dibatalkan!')]) ?>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<?php
+$js = <<< JS
+function processData(type, code, title="", msg=""){
+    let url;
+    switch(type){
+        case "delete":
+            url= baseUrl+module+'/'+controller+'/delete'
+            break;
+        case "reset":
+            url= baseUrl+module+'/'+controller+'/reset-password'
+            break;
+    }
+    Swal.fire({
+        title: title ?? messageConfirm,
+        text: msg ?? textConfirm,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: textYes,
+        cancelButtonText: textNo,
+        buttonsStyling: true,
+        showLoaderOnConfirm: true,
+        preConfirm: function (data) {
+            return new Promise(function (resolve, reject) {
+                $.ajax({
+                    url: url,
+                    data: {
+                        code: code,
+                        _csrf: _csrf
+                    },
+                    type: 'POST',
+                    dataType: 'JSON',
+                    success:function({status}){
+                        resolve(status);
+                    },
+                    error:function(){
+                        resolve(-1)
+                    }
+                });
+
+            })
+        },
+    }).then(function ({isDismissed, value}) {
+        if(isDismissed){
+            Swal.fire(
+                messageCanceled,
+                textCanceled,
+                'error'
+            )
+            return;
+        }
+        if(value==1){
+            Swal.fire(
+                messageSuccess,
+                textSuccess,
+                'success'
+            ).then(function () {
+                $.pjax({url:'index', container:'#p0', timeout: false});
+            });
+        }
+        else if(value==-1){
+            Swal.fire(
+                messageFailed,
+                textFailed,
+                'error'
+            ).then(function () {
+                window.location.reload();
+            });
+        }
+        else{
+            Swal.fire(
+                messageAnauthorized,
+                textAnauthorized,
+                'error'
+            ).then(function () {
+                window.location.reload();
+            });
+        }
+    });
+}
+function init(){
+    $('#delete').click(function(){
+        processData("delete", $(this).attr('code'), $(this).data("title"), $(this).data("desc"));
+    })
+    $('#reset-password').click(function(){
+        processData("delete-password", $(this).attr('code'), $(this).data("title"), $(this).data("desc"));
+    })
+}
+JS;
+$this->registerJs($js);
+?>
 <?php Pjax::end(); ?>

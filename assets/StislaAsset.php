@@ -32,11 +32,11 @@ class StislaAsset extends AssetBundle
         // Template CSS
         'theme/stisla/assets/css/style.css',
         'theme/stisla/assets/css/components.css',
-        '../node_modules/filepond/dist/filepond.css',
-        '../node_modules/select2/dist/css/select2.min.css',
-        '../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.css',
-        '../node_modules/bootstrap-daterangepicker/daterangepicker.css',
-        '../node_modules/sweetalert2/dist/sweetalert2.min.css',
+        'plugin/node/filepond/filepond.css',
+        'plugin/node/select2/css/select2.min.css',
+        'plugin/node/bootstrap-tagsinput/bootstrap-tagsinput.css',
+        'plugin/node/bootstrap-daterangepicker/daterangepicker.css',
+        'plugin/node/sweetalert2/sweetalert2.min.css',
     ];
     public $js = [
         // CDN libs
@@ -56,12 +56,12 @@ class StislaAsset extends AssetBundle
         'theme/stisla/assets/js/stisla.js',
         'theme/stisla/assets/js/scripts.js',
 
-        '../node_modules/filepond/dist/filepond.js',
-        '../node_modules/filepond-plugin-file-validate-type/dist/filepond-plugin-file-validate-type.js',
-        '../node_modules/bootstrap-daterangepicker/daterangepicker.js',
-        '../node_modules/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js',
-        '../node_modules/select2/dist/js/select2.full.min.js',
-        '../node_modules/sweetalert2/dist/sweetalert2.min.js',
+        'plugin/node/filepond/filepond.js',
+        'plugin/node/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.js',
+        'plugin/node/bootstrap-daterangepicker/daterangepicker.js',
+        'plugin/node/bootstrap-tagsinput/bootstrap-tagsinput.min.js',
+        'plugin/node/select2/js/select2.full.min.js',
+        'plugin/node/sweetalert2/sweetalert2.min.js',
         // 'plugin/node/tinymce/tinymce.min.js',
         // 'plugin/node/tinymce-jquery/tinymce-jquery.min.js',
 

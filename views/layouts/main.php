@@ -337,6 +337,20 @@ $this->registerJsVar('baseUrl', Yii::$app->homeUrl);
 $this->registerJsVar('module', Yii::$app->controller->module->id);
 $this->registerJsVar('controller', Yii::$app->controller->id);
 $this->registerJsVar('_csrf', Yii::$app->request->csrfToken);
+
+$this->registerJsVar('messageConfirm', Yii::t('app', 'Kamu Yakin?'));
+$this->registerJsVar('textConfirm', Yii::t('app', "Tindakan ini tidak bisa dibatalkan"));
+$this->registerJsVar('textYes', Yii::t('app', 'iya'));
+$this->registerJsVar('textNo', Yii::t('app', 'batal'));
+$this->registerJsVar('messageSuccess', Yii::t('app', 'Sukses'));
+$this->registerJsVar('messageFailed', Yii::t('app', 'Gagal'));
+$this->registerJsVar('messageAnauthorized', Yii::t('app', 'Tidak diizinkan'));
+$this->registerJsVar('messageCanceled', Yii::t('app', 'Dibatalkan'));
+$this->registerJsVar('textSuccess', Yii::t('app', 'Tindakan ini telah selesai'));
+$this->registerJsVar('textFailed', Yii::t('app', 'Gagal, silahkan coba lagi'));
+$this->registerJsVar('textAnauthorized', Yii::t('app', "Tindakan ini tidak diizinkan"));
+$this->registerJsVar('textCanceled', Yii::t('app', "Tidak ada tindakan lanjutan"));
+?>
 ?>
 
 </html>

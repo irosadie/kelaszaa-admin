@@ -3,6 +3,8 @@
 namespace app\models\mains\generals;
 
 use Yii;
+use app\models\identities\Users;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "topics".
@@ -40,6 +42,22 @@ class Topics extends \yii\db\ActiveRecord
         return 'topics';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+
+    public function delete()
+    {
+        $this->scenario = 'delete';
+        if ($this->save()) :
+            return true;
+        endif;
+        return false;
+    }
+
     /**
      * @return \yii\db\Connection the database connection used by this AR class.
      */
@@ -58,6 +76,15 @@ class Topics extends \yii\db\ActiveRecord
             [['short_desc', 'desc'], 'string'],
             [['code'], 'string', 'max' => 20],
             [['thumbnail', 'title', 'main_video', 'main_file'], 'string', 'max' => 255],
+
+            ['created_by', 'default', 'value' => Yii::$app->user->id],
+            ['updated_by', 'default', 'value' => Yii::$app->user->id, 'when' => function ($model) {
+                return !$model->isNewRecord;
+            }],
+            ['deleted_at', 'default', 'value' => time(), 'on' => 'delete'],
+            ['deleted_by', 'default', 'value' => Yii::$app->user->id, 'on' => 'delete'],
+            [['desc', 'short_desc'], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+
             [['class_id'], 'exist', 'skipOnError' => true, 'targetClass' => Classes::className(), 'targetAttribute' => ['class_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['deleted_by' => 'id']],
